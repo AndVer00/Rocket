@@ -1,50 +1,60 @@
-#include <iostream>
-#include <cmath>
-#define PI 3.14159265
+#include<iostream>
+#include<vector>
+#include <algorithm>
+#include <string>
+#include <fstream>
+#include <ctime>
+#include <map>
 
 using namespace std;
 
 int main() {
-    const double G = 6.67 * pow(10, -11);
-    const double earthMass = 5.97 * pow(10, 24);
+    long double angle, burningSpeed, rocketMass, fuel_mass, gasesSpeed, current_g;
+    long double speed_x = 0, speed_y = 0, a = 0, current_speed = 0, current_x = 0, current_y = 0;
 
-    double angle, burningSpeed, rocketM, fuelM, gasesSpeed;
-    double speedX, speedY, g, previousSpeed;
-    double speed = 0;
-    double x = 0;
-    double y = 0;
-    
-    cin >> angle >> burningSpeed >> rocketM >> fuelM >> gasesSpeed;
+    const long double pi = 3.1415;
+    const long double G = 6.67 * pow(10, -11);
+    const int radius_of_Earth = 6371000;
+    long double mass_of_Earth = 5.97 * pow(10, 24);
 
-    angle = angle * PI / 180.0;
+    cout << "Enter angle:" << endl;
+    cin >> angle;
+    angle = angle * pi / 180;
+    cout << "Enter gases burning speed:" << endl;
+    cin >> burningSpeed;
+    cout << "Enter gases rocket mass:" << endl;
+    cin >> rocketMass;
+    cout << "Enter gases fuel mass:" << endl;
+    cin >> fuel_mass;
+    cout << "Enter gases gases speed:" << endl;
+    cin >> gasesSpeed;
 
-    while (fuelM > 0) {
-        if (y != 0) {
-            g = (G * earthMass) / (pow(y, 2)); //m << M
-        }
-        else {
-            g = 9.80665;
-        }
+    while (current_y >= 0) {
+        current_g = (G * mass_of_Earth) / pow(current_y + radius_of_Earth, 2);
 
-        previousSpeed = speed;
+        if (fuel_mass > 0)
+            a = burningSpeed * gasesSpeed / (rocketMass + fuel_mass);
+        else
+            a = 0;
 
-        speed = burningSpeed * gasesSpeed / (rocketM + fuelM);
-        speedX = cos(angle) * speed;
-        speedY = sin(angle) * speed;
+        fuel_mass -= burningSpeed;
 
-        x = x + speedX * 1 + cos(angle) * (speed - previousSpeed) / 2;
-        y = y + speedY * 1 + (sin(angle) * (speed - previousSpeed) - g) / 2;
+        if (fuel_mass < 0)
+            fuel_mass = 0;
 
-        angle = atan(speedY / speedX);
+        speed_x = speed_x + a * cos(angle);
+        speed_y = speed_y + a * sin(angle) - current_g;
+        current_speed = sqrt(pow(speed_x, 2) + pow(speed_y, 2));
 
-        cout << "Current x coordinate: " << x << endl;
-        cout << "Current y coordinate: " << y << endl;
-        cout << "Current speed: " << speed << endl;
-        cout << "Current fuel mass: " << fuelM << endl;
+        current_x = current_x + speed_x;
+        current_y = current_y + speed_y;
+
+        cout << "Current statistics: " << endl;
+        cout << "---Coordinate X: " << current_x << endl;
+        cout << "---Coordinate Y: " << current_y << endl;
+        cout << "---Current speed: " << current_speed << endl;
+        cout << "---Current fuel mass: " << fuel_mass << endl;
         cout << endl;
-
-        fuelM -= burningSpeed;
     }
-
     return 0;
 }
